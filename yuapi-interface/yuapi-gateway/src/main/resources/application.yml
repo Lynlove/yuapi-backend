@@ -1,0 +1,53 @@
+server:
+  port: 8090
+
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - AddResponseHeader=source, yupi
+      routes:
+        - id: api_route
+          uri: http://localhost:8123
+          predicates:
+            - Path=/api/**
+
+#            - name: CircuitBreaker
+#              args:
+#                name: myCircuitBreaker
+#                fallbackUri: forward:/fallback
+#        - id: yupi-fallback
+#          uri: https://yupi.icu
+#          predicates:
+#            - Path=/fallback
+#        - id: add_request_header_route
+#          uri: http://localhost:8123
+#          predicates:
+#            - Path=/api/**
+#          filters:
+#              - AddRequestHeader=yupi, blue
+#              - AddRequestParameter=name, dog
+#
+# CircuitBreaker: 定义了一个断路器过滤器，用于实现降级功能。该断路器的名字是 "myCircuitBreaker"，
+#  当路由目标地址出现故障时，会触发降级策略，将请求转发到 "/fallback" 路径。
+#  路由 "yupi-fallback"，定义了一组断言，这里使用 "Path=/fallback" 断言，
+# 表示请求的路径为 "/fallback" 时，会匹配到该路由。
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          gateway: trace
+# 以下配置指定了应用的名称、使用的协议（Dubbo）、注册中心的类型（Nacos）和地址
+dubbo:
+  application:
+    # 设置应用的名称
+    name: dubbo-springboot-demo-provider
+  # 指定使用 Dubbo 协议，且端口设置为 -1，表示随机分配可用端口
+  protocol:
+    name: dubbo
+    port: 22223
+  registry:
+    # 配置注册中心为 Nacos，使用的地址是 nacos://localhost:8848
+    id: nacos-registry
+    address: nacos://localhost:8848
